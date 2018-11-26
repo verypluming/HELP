@@ -34,4 +34,4 @@ conj_test.tsv, disj_test.tsv, downwad_test.tsv, upward_test.tsv - Test split of 
 ```
 
 ## Reference
->>>>>>> origin/master
+

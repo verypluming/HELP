@@ -1,0 +1,101 @@
+	filename	determiner	monotonicity	gold_label	replace_target	replace_source	replace_mode	ori_sentence	new_sentence
+4331	silver/p65/d2083	and	conjunction	entailment				Every one except Tom	Every one except Tom and Mary are already here .
+2509	silver/p31/d2039	and	conjunction	neutral				Tom shot	Tom shot and killed a bear .
+51	gold/p18/d3518	and	conjunction	neutral				Tom removed his glasses	Tom removed his glasses and rubbed his eyes .
+959	silver/p09/d0756	and	conjunction	neutral				""" It 's a vote of confidence that the momentum is going to continue "" , Doyle said . The momentum also appears to be moving south . The Mexican election is the latest indication that the free-market reforms that have swept Latin~America during the past decade are gaining political acceptance . In Brazil , prices rose sharply , reacting to the Mexico vote"	""" It 's a vote of confidence that the momentum is going to continue "" , Doyle said . The momentum also appears to be moving south . The Mexican election is the latest indication that the free-market reforms that have swept Latin~America during the past decade are gaining political acceptance . In Brazil , prices rose sharply , reacting to the Mexico vote and to new polls favorable to free-market presidential candidate Fernando Henrique Cardoso ."
+901	silver/p08/d2471	and	conjunction	neutral				Sabrina slipped	Sabrina slipped and spilled coffee all over Mary 's dress .
+5903	silver/p96/d3148	and	conjunction	neutral				""" There are stables on the ground~floor"	""" There are stables on the ground~floor and haylofts above them . """
+3534	silver/p48/d2399	and	conjunction	entailment				The best-known compositions by Franz Liszt are his nineteen Hungarian Rhapsodies , but he also created beautiful sonatas , symphonies , concerti , songs , and religious compositions .	The best-known compositions by Franz Liszt are his nineteen Hungarian Rhapsodies , but he also created beautiful sonatas , symphonies , concerti , songs ,
+3547	silver/p48/d2828	and	conjunction	neutral				The servant led me to a very beautiful room , which served simultaneously as a living room	The servant led me to a very beautiful room , which served simultaneously as a living room and office in the engineer 's house .
+2909	silver/p37/d2903	and	conjunction	neutral				My name is Mary	My name is Mary and this is Tom .
+1547	silver/p16/d2552	and	conjunction	neutral				Tom peeked in the window	Tom peeked in the window and saw Mary and John kissing .
+975	silver/p09/d1721	and	conjunction	entailment				Translations are like lovers- the beautiful ones are never faithful ,	Translations are like lovers- the beautiful ones are never faithful , and the faithful ones are never beautiful .
+4093	silver/p59/d2670	and	conjunction	neutral				I am busy now	I am busy now and ca n't go out .
+5670	silver/p92/d2108	and	conjunction	entailment				All the photographs and videos of the aeroplane dropping teddy bears are claimed to be falsification and provocation by Belarusian authorities .	All the photographs
+2583	silver/p32/d2032	and	conjunction	neutral				Tom gave Mary flowers	Tom gave Mary flowers and chocolate on their anniversary .
+5588	silver/p89/d3460	and	conjunction	entailment				We 're going to invite Tom and Mary to our Halloween party .	We 're going to invite Tom
+3235	silver/p44/d0858	and	conjunction	neutral				Actually I wanted to be a damsel in a tower guarded by seven dragons ,	Actually I wanted to be a damsel in a tower guarded by seven dragons , and then a prince on a white horse would chop off the dragons ' heads and liberate me .
+1558	silver/p16/d2789	and	conjunction	entailment				She speaks English , and French as well .	She speaks English ,
+2249	silver/p27/d0719	and	conjunction	neutral				I recently took a round trip from Abuja to Yola , the capital of Adamawa State	I recently took a round trip from Abuja to Yola , the capital of Adamawa State and back to Abuja , with a fourteen-seater bus .
+1170	silver/p11/d2695	and	conjunction	entailment				Fear drives him , he plucks up courage and throws himself into the roaring waves ; his powerful arms cut through the flow , and his God feels pity .	Fear drives him , he plucks up courage
+3204	silver/p43/d2774	and	conjunction	entailment				The twelve animals of the Chinese Zodiac come from eleven types of animals we find in nature : the rat , the ox , the tiger , the hare , the snake , the horse , the ram , the monkey , the rooster , the dog , the pig , and the mythological dragon ; they 're used as a calendar .	The twelve animals of the Chinese Zodiac come from eleven types of animals we find in nature : the rat , the ox , the tiger , the hare , the snake , the horse , the ram , the monkey , the rooster , the dog , the pig ,
+643	silver/p05/d2457	and	conjunction	neutral				And then Tom started shouting	And then Tom started shouting and told everyone to go home .
+56	gold/p25/d3353	and	conjunction	entailment				Tom grabbed a chair and sat down .	Tom grabbed a chair
+1430	silver/p14/d3474	and	conjunction	entailment				I would like to thank my parents , Tom and Mary .	I would like to thank my parents , Tom
+3120	silver/p42/d1948	and	conjunction	entailment				Finally , in 1314 , these games had become so violent and dangerous that King Edward~II made a law .	Finally , in 1314 , these games had become so violent
+4291	silver/p64/d3120	and	conjunction	neutral				Roughly half of America 's fruits	Roughly half of America 's fruits and vegetables come from California .
+3003	silver/p39/d1806	and	conjunction	neutral				He applied for the job	He applied for the job and got it .
+2395	silver/p29/d3362	and	conjunction	neutral				You 've blocked me on Facebook ,	You 've blocked me on Facebook , and now you suddenly disappear .
+3335	silver/p45/d2806	and	conjunction	neutral				Let 's go out	Let 's go out and eat dinner together from time to time .
+1422	silver/p14/d3314	and	conjunction	entailment				I threw a ball to my dog and he caught it in his mouth .	I threw a ball to my dog
+2134	silver/p25/d1521	and	conjunction	entailment				She just ate sushi and drank beer .	She just ate sushi
+3711	silver/p52/d1935	and	conjunction	neutral				I am studying Chinese	I am studying Chinese and Spanish .
+6060	silver/p99/d2880	and	conjunction	entailment				The meeting started at 2:30 and ended at 5:00 .	The meeting started at 2:30
+1031	silver/p10/d0708	and	conjunction	neutral				On June 6 , 1944 , Allied naval , air	"On June 6 , 1944 , Allied naval , air and ground forces operating with airborne assault troops and paratroopers overwhelmed the German "" West~Wall "" defenses built along France 's Channel Coast ."
+5046	silver/p79/d1668	and	conjunction	entailment				I dream to go and live in Lithuania .	I dream to go
+2623	silver/p32/d3478	and	conjunction	neutral				He is average height , is white , has brown hair	He is average height , is white , has brown hair and brown eyes .
+214	silver/p00/d2962	and	conjunction	entailment				The children started bouncing up and down on the couch .	The children started bouncing up
+3631	silver/p51/d0756	and	conjunction	neutral				Charles~de~Gaulle retired as an earl	Charles~de~Gaulle retired as an earl and died in November . He wished a simple funeral for himself : he would be buried in his village in a seventy-two dollar oak coffin , borne to his grave by his fellow villagers-a butcher 's assistant , a cheesemaker , and a farmhand .
+5358	silver/p86/d1648	and	conjunction	entailment				Tom dropped a strawberry on the floor and Mary stepped on it .	Tom dropped a strawberry on the floor
+4731	silver/p73/d3279	and	conjunction	neutral				I took a bath	I took a bath and then had a glass of beer .
+5944	silver/p97/d3016	and	conjunction	entailment				Tom got in the car and they drove off .	Tom got in the car
+5295	silver/p85/d0757	and	conjunction	neutral				The researchers in the latest study fed one group of mice a diet in which 60 percent of calories came from fat . The diet started when the mice , all males , were 1 year old , which is middle-age in mouse longevity . As expected , the mice soon developed signs of impending diabetes , with grossly enlarged livers ,	The researchers in the latest study fed one group of mice a diet in which 60 percent of calories came from fat . The diet started when the mice , all males , were 1 year old , which is middle-age in mouse longevity . As expected , the mice soon developed signs of impending diabetes , with grossly enlarged livers , and started to die much sooner than mice fed a standard diet .
+3617	silver/p49/d2949	and	conjunction	neutral				Tom got back in his car	Tom got back in his car and drove away .
+3258	silver/p44/d2520	and	conjunction	entailment				Listening to Mahler , Lyusya would always think of death and life eternal .	Listening to Mahler , Lyusya would always think of death
+1849	silver/p20/d2940	and	conjunction	neutral				Benjamin~Franklin was an American statesman	Benjamin~Franklin was an American statesman and inventor .
+4930	silver/p77/d2149	and	conjunction	entailment				Tom took his finger off the trigger and put his pistol back in its holster .	Tom took his finger off the trigger
+3528	silver/p48/d2141	and	conjunction	entailment				Tom is ready to settle down and start a family .	Tom is ready to settle down
+234	silver/p00/d3487	and	conjunction	neutral				There was no one in the room besides Tom and Mary .	There was no one in the room besides Tom
+1670	silver/p18/d2224	and	conjunction	entailment				A circus is a place where horses , ponies and elephants are permitted to see men , women and children acting the fool .	A circus is a place where horses , ponies
+2355	silver/p29/d1534	and	conjunction	neutral				We are busy preparing for our wedding	We are busy preparing for our wedding and honeymoon .
+5400	silver/p86/d3265	and	conjunction	entailment				Tom is rude and selfish .	Tom is rude
+2830	silver/p36/d2106	and	conjunction	entailment				Tom fell off the roof and broke three ribs .	Tom fell off the roof
+2848	silver/p36/d2901	and	conjunction	entailment				I 'm cold and wet .	I 'm cold
+1703	silver/p18/d3489	and	conjunction	neutral				This coffee is a blend of Java	This coffee is a blend of Java and Brazil .
+1366	silver/p14/d1594	and	conjunction	entailment				The Persian~Gulf is located between Iran ( Persia ) and the Arabian~Peninsula .	The Persian~Gulf is located between Iran ( Persia )
+2785	silver/p35/d2679	and	conjunction	neutral				Tom 's pillow is pink	Tom 's pillow is pink and has a picture of a fairy on it .
+1106	silver/p10/d3270	and	conjunction	entailment				She 's a smart and independent girl .	She 's a smart
+3969	silver/p57/d1656	and	conjunction	neutral				Please think it over	Please think it over and let me know your decision .
+2093	silver/p24/d2648	and	conjunction	neutral				It also holds pitfalls . The trick will be to avoid the pitfalls , seize the opportunities ,	It also holds pitfalls . The trick will be to avoid the pitfalls , seize the opportunities , and get back home by six~o'clock .
+4599	silver/p71/d2506	and	conjunction	neutral				Tom bought some vegetables	Tom bought some vegetables and fruit .
+4046	silver/p58/d2862	and	conjunction	entailment				There is a border between the United~States and Mexico .	There is a border between the United~States
+1887	silver/p21/d0953	and	conjunction	neutral				It 's raining cats	It 's raining cats and dogs .
+5615	silver/p91/d1724	and	conjunction	neutral				I like steak better than anything else ,	I like steak better than anything else , and eat it every other day .
+4996	silver/p78/d2251	and	conjunction	entailment				A merchant is a person who buys and sells goods .	A merchant is a person who buys
+3799	silver/p54/d0814	and	conjunction	neutral				I have two children . One is a boy	I have two children . One is a boy and the other is a girl .
+1676	silver/p18/d2779	and	conjunction	entailment				After getting out of the shower , Tom wiped the fog off the mirror and shaved .	After getting out of the shower , Tom wiped the fog off the mirror
+2813	silver/p36/d1432	and	conjunction	neutral				If it had n't been for Lindbergh 's luck	If it had n't been for Lindbergh 's luck and his knowledge of flying , he could never have succeeded in crossing the Atlantic .
+5154	silver/p82/d2364	and	conjunction	entailment				Some of the most sociable people I know have friends both online and off- .	Some of the most sociable people I know have friends both online
+4917	silver/p77/d1457	and	conjunction	neutral				He 's a good actor	He 's a good actor and he 's really cute too !
+5955	silver/p97/d3530	and	conjunction	neutral				This book is translated into 36 languages	This book is translated into 36 languages and has been published in more than a 100 countries all over the world .
+5437	silver/p87/d2116	and	conjunction	neutral				The wicked witch cast a spell on the man	The wicked witch cast a spell on the man and turned him into a bug .
+2187	silver/p25/d3319	and	conjunction	neutral				The whole audience got up	The whole audience got up and started to applaud .
+1739	silver/p19/d1727	and	conjunction	neutral				I deeply admire Frida~Kahlo 's life	I deeply admire Frida~Kahlo 's life and work .
+3086	silver/p41/d2242	and	conjunction	neutral				Once upon a time , there was a man and his wife . They had no house . They were living in the fields and sleeping at the foot of a tree .	Once upon a time , there was a man
+4218	silver/p62/d3501	and	conjunction	entailment				He bought eggs and milk from a farmer .	He bought eggs
+634	silver/p05/d2310	and	conjunction	entailment				We have three dogs , one white and two black .	We have three dogs , one white
+1869	silver/p20/d3530	and	conjunction	neutral				He was tired	He was tired and nervous from overwork .
+94	gold/p61/d1432	and	conjunction	entailment				The couple was quarrelling and Chris knocked Beth down .	The couple was quarrelling
+926	silver/p08/d3029	and	conjunction	entailment				Tigers are bigger and stronger than cats .	Tigers are bigger
+5721	silver/p93/d2473	and	conjunction	entailment				It is the place where there is no person in question ,	It is the place where there is no person in question , and you should n't say abuse .
+957	silver/p09/d0717	and	conjunction	neutral				The Shoemaker-Levy comet was discovered by Shoemaker , his wife , Carolyn ,	The Shoemaker-Levy comet was discovered by Shoemaker , his wife , Carolyn , and an astronomer David H. Levy .
+5613	silver/p91/d1692	and	conjunction	neutral				We are far more likely to be harmed by our fellow man than by our fellow animals , yet we call animals wild	We are far more likely to be harmed by our fellow man than by our fellow animals , yet we call animals wild and dangerous and we call man advanced and civilised .
+474	silver/p03/d2115	and	conjunction	neutral				Tom does n't know the difference between wine and champagne .	Tom does n't know the difference between wine
+4439	silver/p67/d1669	and	conjunction	neutral				I have three brothers ; one lives in Japan ,	I have three brothers ; one lives in Japan , and the others abroad .
+3064	silver/p41/d0705	and	conjunction	entailment				The Order of the Solar Temple lost 69 members in mass suicides in Switzerland , Canada and France between 1994 and 1995 , according to the prosecutor 's office .	The Order of the Solar Temple lost 69 members in mass suicides in Switzerland , Canada
+2453	silver/p30/d2632	and	conjunction	entailment				Australian saltwater crocodiles can grow up to 23 feet long	Australian saltwater crocodiles can grow up to 23 feet long and frequently kill people .
+5473	silver/p87/d3441	and	conjunction	entailment				I do n't think Tom	I do n't think Tom and Mary are ever going to be friends .
+4468	silver/p67/d3373	and	conjunction	entailment				My grandfather nodded and smiled at me .	My grandfather nodded
+4466	silver/p67/d3311	and	conjunction	entailment				Tom broke his leg last year and has limped ever since .	Tom broke his leg last year
+2131	silver/p25/d1501	and	conjunction	neutral				There was an earthquake	There was an earthquake and , in addition , there was a tsunami .
+5766	silver/p94/d1992	and	conjunction	entailment				When Tom told Mary to feel right at home , he was secretly hoping that she 'd go and wash up the dishes in the kitchen .	When Tom told Mary to feel right at home , he was secretly hoping that she 'd go
+1802	silver/p20/d1916	and	conjunction	entailment				He has strong bones and teeth .	He has strong bones
+822	silver/p07/d2327	and	conjunction	entailment				I caught a cold , and I have a fever .	I caught a cold ,
+1837	silver/p20/d2719	and	conjunction	neutral				All it takes is concentration	All it takes is concentration and solitude .
+3271	silver/p44/d2745	and	conjunction	neutral				Pretty soon along came to the village some strangely dressed people who called themselves surveyors ;	Pretty soon along came to the village some strangely dressed people who called themselves surveyors ; and they surveyed a line in front of my grandmother 's little house .
+477	silver/p03/d2119	and	conjunction	neutral				I agree with both Tom	I agree with both Tom and Mary .
+1009	silver/p09/d3018	and	conjunction	neutral				Seals are clumsy	Seals are clumsy and ponderous on land , but very graceful in the water .
+4999	silver/p78/d2326	and	conjunction	entailment				Tom complains that his new phone is too big	Tom complains that his new phone is too big and that it wo n't fit in his pants .
+5203	silver/p83/d2257	and	conjunction	neutral				Let 's go	Let 's go and see Tom .
+995	silver/p09/d2506	and	conjunction	neutral				I hope you all liked it	I hope you all liked it and that you all come back soon .
+1297	silver/p13/d2157	and	conjunction	entailment				All great men are dead	All great men are dead and I am not feeling too well myself .

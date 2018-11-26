@@ -15,7 +15,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-#monotonicityの性質を利用した置き換えメインプログラム
 import glob
 import numpy as np
 import pandas as pd
@@ -40,16 +39,14 @@ f.close()
 candc_dir = locations[0].split(":")[1].strip()
 easyccg_dir = locations[1].split(":")[1].strip()
 
-#名詞の単複を維持する処理
 def keep_plurals(noun, newnoun):
     if inflect.singular_noun(noun) is False:
-        #singular
+        # singular
         return singularize(newnoun)
     else:
-        #plural
+        # plural
         return pluralize(newnoun)
 
-#動詞のテンス等を維持する処理
 def keep_tenses(verb, newverb):
     ori_tense = tenses(verb)[0]
     ori_tense2 = [x for x in ori_tense if x is not None]
@@ -112,7 +109,7 @@ def keep_tenses(verb, newverb):
     #print(newverb, newverb_tense)
     return newverb_tense
 
-#replace系
+# functions for replacement
 def remove_duplicates(x):
     y=[]
     for i in x:
@@ -124,34 +121,6 @@ def replace_sentence(determiner, nounmono, noun, newnoun, sentence, results, tar
     pat = re.compile(noun)
     newpat = re.compile(newnoun)
     newsentence = re.sub(noun, newnoun, sentence)
-    #ori = open("./tmp.txt", "w")
-    #ori.write(sentence)
-    #ori.close()
-    #command = ["$HOME/models/research/bazel-bin/lm_1b/lm_1b_eval --mode eval \
-    #            --pbtxt $HOME/models/research/data/graph-2016-09-10.pbtxt \
-    #            --vocab_file $HOME/models/research/data/vocab-2016-09-10.txt  \
-    #            --input_data ./tmp.txt \
-    #            --ckpt $HOME'/models/research/data/ckpt-*' \
-    #            --max_eval_steps 100"]
-    #ps1 = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    #result1 = ps1.stdout.readlines()
-    #oriprep = re.search("Average Perplexity: ([0-9\.]*)", result1[-1]).group(1)
-    #new = open("./tmp.txt", "w")
-    #new.write(newsentence)
-    #new.close()
-    #command = ["$HOME/models/research/bazel-bin/lm_1b/lm_1b_eval --mode eval \
-    #            --pbtxt $HOME/models/research/data/graph-2016-09-10.pbtxt \
-    #            --vocab_file $HOME/models/research/data/vocab-2016-09-10.txt  \
-    #            --input_data ./tmp.txt \
-    #            --ckpt $HOME'/models/research/data/ckpt-*' \
-    #            --max_eval_steps 100"]
-    #ps2 = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    #result2 = ps2.stdout.readlines()
-    #newprep = re.search("Average Perplexity: ([0-9\.]*)", result2[-1]).group(1)
-    #score = float(str(newprep).strip(".")) - float(str(oriprep).strip("."))
-    #if float(str(newprep).strip(".")) > 200 or score > 100:
-    #    # パープレキシティの相対値が100以上、絶対値が200以上だったら採用しない
-    #    return results
     gold_label = check_label(nounmono, 'simple')
     record = pd.Series([target, determiner, nounmono, gold_label, noun, newnoun, 'simple', sentence, newsentence], index=results.columns)
     record = pd.Series([target, determiner, nounmono, rev_label(gold_label, nounmono), noun, newnoun, 'simple', newsentence, sentence], index=results.columns)
@@ -184,7 +153,6 @@ def replace_sentence_WN_nv(determiner, nounmono, verbmono, noun, nounsense, verb
                   "verb_hyponym": verbhyponym
                  }
     #print(synsetdict)
-    #動詞-名詞間の概念間のsimilarityの最大値をもつsynsetのみ使用
     for rel, synset in synsetdict.items():
         synsetwords = synset.lemma_names()
         #print(synsetwords)
@@ -217,21 +185,10 @@ def replace_sentence_WN(determiner, nounmono, noun, sense, sentence, results, ta
     synset = wn.synset(sense)
     hypernyms = synset.hypernyms()
     hyponyms = synset.hyponyms()
-    #synset_words = synset.lemma_names()
-    #trialではそれぞれひとつずつに
-    #for synset_word in synset_words:
-    #    #print(hypernym_word)
-    #    new_synset_word = re.sub("_", " ", synset_word)
-    #    newnoun = keep_plurals(noun, new_synset_word)
-    #    pat = re.compile(noun)
-    #    newpat = re.compile(new_synset_word)
-    #    newsentence = re.sub(noun, newnoun, sentence)
-    #    record = pd.Series([target, noun, newnoun, 'noun_synset_obj', sentence, newsentence], index=results.columns)
-    #    results = results.append(record, ignore_index = True)
-        
+
     for hypernym in hypernyms:
         #if len(hypernym.examples()) == 0:
-        #    #exampleがないのはあまり使わない語なので除外
+        #    # remove if no example exists in WordNet
         #    continue
         hypernym_words = hypernym.lemma_names()
         for hypernym_word in hypernym_words:
@@ -249,7 +206,7 @@ def replace_sentence_WN(determiner, nounmono, noun, sense, sentence, results, ta
             
     for hyponym in hyponyms:
         #if len(hyponym.examples()) == 0:
-        #    #exampleがないのはあまり使わない語なので除外
+        #    # remove if no example exists in WordNet
         #    continue
         hyponym_words = hyponym.lemma_names()
         for hyponym_word in hyponym_words:
@@ -267,8 +224,7 @@ def replace_sentence_WN(determiner, nounmono, noun, sense, sentence, results, ta
     return results
 
 def replace_sentence_numeral(det, num, sentence, results, target):
-    #前処理
-    #漏れてそうなので確認 (todo: at least １のとき０にするのはいいのか？）
+    #not used
     tmpnum = str(number(num))
     tmpnum = re.sub(",", "", tmpnum)
     if det.lower() in ['more', 'greater', 'larger', 'taller', 'bigger', 'least']:
@@ -325,13 +281,6 @@ def assign_values_in_feat_structs(ccg_root):
         assign_values_in_feat_structs(child_node)
 
 def assign_child_info(ccg_tree, sentence_number, tokens_node):
-    """
-    Inserts an attribute in every non-terminal node, indicating the ID
-    of its child or children. In case of having children, their IDs
-    are separated by a single whitespace.
-    This function also introduces a pos="None" attribute for every
-    non-terminal node.
-    """
     if len(ccg_tree) == 0:
         token_position = ccg_tree.get('start')
         ccg_tree.set('terminal', 't' + str(sentence_number) + '_' + str(token_position))
@@ -351,31 +300,6 @@ def flatten_and_rename_nodes(ccg_root):
     return spans
 
 def candc_to_transccg(ccg_tree, sentence_number):
-    """
-    This function converts a sentence CCG tree generated by the C&C parser
-    into a CCG tree using the format from transccg. For that purpose, we
-    encapsulate into a <sentence> node two subtrees:
-    <tokens> :
-      1) An 'id' field is added, with the format s{sentence_number}_{token_number}.
-      2) The C&C attribute 'word' of a leaf node is renamed into 'surf'.
-      3) The C&C attribute 'lemma' of a leaf node is renamed into 'base'.
-      4) The rest of the attributes of a leaf node remain unchanged.
-    <ccg> :
-      1) Copy tokens as <span> nodes with no tree structure, where:
-         1.1) A 'terminal' attribute is added, pointing to the 'id' attribute of
-              <tokens> subtree.
-      2) Non-terminal nodes:
-         2.1) The 'type' attribute is renamed as the 'rule' attribute, which
-              contains the name of the rule (e.g. forward application, etc.).
-         2.2) A 'child' attribute is added, that contains a space-separated list
-              of <span> IDs.
-      3) All nodes (including the recently created <span> terminals nodes):
-         3.1) The attribute 'id' has the format s{sentence_number}_sp{span_number}.
-              The order is depth-first.
-         3.2) The attribute 'cat' is renamed as 'category'.
-         3.3) Categories with feature structures of the form POS[feat] (note that
-              there is no value associated to "feat") are converted to POS[feat=true].
-    """
     # Obtain the <tokens> subtree and store it in variable tokens_node.
     tokens = get_nodes_by_tag(ccg_tree, 'lf')
     for i, token in enumerate(tokens):
@@ -469,7 +393,7 @@ def parse(parser_name, sentence):
         result = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = result.communicate()
         parse_result = candc2transccg(out)
-    #todo    
+    # todo    
     elif parser_name == "easyccg":
         # Parse using EasyCCG
         command = "echo "+sentence+"|"+candc_dir+"bin/pos --model "+candc_dir+"models/pos|"+candc_dir+"bin/ner -model "+candc_dir+"models/ner -ofmt \"%w|%p|%n \n\" |java -jar "+easyccg_dir+"easyccg.jar --model "+easyccg_dir+"model -i POSandNERtagged -o extended --maxLength 100 --nbest 1"
@@ -479,14 +403,11 @@ def parse(parser_name, sentence):
     return parse_result
 
 def check_monotonicity(determiner):
-    #determinerのmonotonicityを確認
     nounmono, verbmono = "non_monotone", "non_monotone"
     upward_noun = ["some", "a"]
     upward_verb = ["every", "each", "all", "some", "both", "most", "many", "several", "this", "that", "a", "the"]
     downward_noun = ["every", "each", "all", "no", "neither", "any", "never"]
     downward_verb = ["no", "neither", "any", "never", "few"]
-    #non_noun = ["exactly", "most", "many", "several", "few", "this", "that", "both", "the"]
-    #non_verb = []
     if determiner in upward_noun:
         nounmono = "upward_monotone"
     if determiner in upward_verb:
@@ -498,7 +419,6 @@ def check_monotonicity(determiner):
     return nounmono, verbmono
 
 def check_label(monotonicity, mode):
-    #わかる範囲でgold_labelを振る
     modegroup = ""
     if re.search("hypo", mode):
         modegroup = "down"
@@ -515,11 +435,10 @@ def check_label(monotonicity, mode):
     elif monotonicity == "downward_monotone" and modegroup == "down":
         return "entailment"
     else:
-        #non-monotoneはdown
         return "neutral"
 
 def rev_label(gold_label, monotonicity):
-    #ラベルを逆転させるだけの処理
+    #reverse the gold_label
     if monotonicity == "non_monotone":
         return "neutral"
     elif gold_label == "entailment":
@@ -528,7 +447,6 @@ def rev_label(gold_label, monotonicity):
         return "entailment"
 
 def main():
-    #determinerを含む例を取得
     parser = etree.XMLParser(remove_blank_text=True)
     files = glob.glob("../data/pmb-2.1.0/data/*/*/*/en.drs.xml")
     #files = glob.glob("../data/pmb-2.1.0/data/gold/*/*/en.drs.xml")
@@ -537,7 +455,7 @@ def main():
     "several", "exactly"]
     #determiners = ["each"]
     floating_list = ["both", "all", "each"]
-    #a,the, this, thatは一旦置いておく
+    #a ,the, this, that
     for determiner in determiners:
         target_files = []
         nounmono, verbmono = check_monotonicity(determiner)
@@ -545,8 +463,6 @@ def main():
             filename = re.search("\/data\/pmb-2.1.0\/data\/(.*?)\/en.drs.xml", file).group(1)
             try:
                 tree = etree.parse("../data/pmb-2.1.0/data/"+filename+"/en.drs.xml", parser)
-                #filename = re.search("\/data\/pmb-2.1.0\/data\/gold\/(.*?)\/en.drs.xml", file).group(1)
-                #tree = etree.parse("../data/pmb-2.1.0/data/gold/"+filename+"/en.drs.xml", parser)
                 words = tree.xpath("//taggedtokens/tagtoken/tags/tag[@type='lemma']/text()")
                 if determiner in words:
                     target_files.append(filename)
@@ -555,7 +471,6 @@ def main():
 
         results = pd.DataFrame(index=[], columns=['filename', 'determiner', 'monotonicity', 'gold_label', 'replace_target', 'replace_source', 'replace_mode', 'ori_sentence', 'new_sentence'])
         #target_files = ["silver/p47/d2720"]
-        #determinerが修飾する名詞（句）の置き換え
         for target in target_files:
             #print(target)
             try:
@@ -565,7 +480,7 @@ def main():
                 impid = tree2.xpath("//taggedtokens/tagtoken/tags/tag[@type='sem'][contains(text(), 'IMP')]/../../@xml:id")
                 negid = tree2.xpath("//taggedtokens/tagtoken/tags/tag[@type='sem'][contains(text(), 'NOT')]/../../@xml:id")
                 if len(negid) > 0 or len(impid) > 0:
-                    #TODO: negation, implication入っている場合はmonotonicity逆転させるべきかも？
+                    # TODO: recerse monotonicity if negation or implication exists
                     print(target+": contains negation or implication. reverse monotonicity?\n")
                 queid = tree2.xpath("//taggedtokens/tagtoken/tags/tag[@type='sem'][contains(text(), 'QUE')]/../../@xml:id")
                 firstpos = tree2.xpath("//taggedtokens/tagtoken[@xml:id='i1001']/tags/tag[@type='pos']/text()")
@@ -579,23 +494,23 @@ def main():
                     words = []
                     words = tree2.xpath("//taggedtokens/tagtoken/tags/tag[@type='tok']/text()")
                     if len(words) <= 5:
-                        #5単語以下は除く
+                        # remove less than 5 words
                         print(target+": is less than 5 words\n")
                         continue
                     if len(firstpos) > 0:
                         meirei = firstpos[0]
                         if re.search("^VB", meirei):
-                            #命令形(最初が動詞）は除く
+                            # remove imperatives
                             print(target+": is meireikei\n")
                             continue
                     if "\"" in words or len(queid) > 0:
-                        #疑問文、ダブルクォテーションを含む文は除く
+                        # remove questions
                         print(target+": contains quotation or question\n")
                         continue
                     sentence = " ".join(words)
                     sentence = re.sub("ø ", "", sentence)
                     if determiner == "no":
-                        #コロケーションは除く
+                        # remove collocations
                         if re.search("no one", sentence) or re.search("No one", sentence) or re.search("No doubt", sentence) or re.search("no doubt", sentence) or re.search("No ,", sentence):
                             continue
                     #print(sentence)
@@ -608,7 +523,7 @@ def main():
                     child_ids, child_verb_ids = [], []
                     #print(target_id)
 
-                    #名詞句親ノード, 動詞句親ノード特定
+                    # detect the parent node of NP and VP
                     while True:
                         parent_id = tree3.xpath("//ccg/span[contains(@child, '" + target_id[0] + "')]/@id")
                         parent_category = tree3.xpath("//ccg/span[contains(@child, '" + target_id[0] + "')]/@category")[0]
@@ -627,7 +542,7 @@ def main():
                             target_id = parent_id
 
                     #print(target_id, verb_id)
-                    #名詞親ノード以下のtoken全て取得
+                    # extract the whole NP subtree
                     list_target_id = target_id[0].split(" ")
                     while True:
                         childid = []
@@ -641,7 +556,7 @@ def main():
                             child_ids.extend(childid)
                             list_target_id = childid
                     
-                    #動詞親ノード以下のtoken全て取得
+                    # extract the whole VP subtree
                     list_verb_id = verb_id[0].split(" ")
                     while True:
                         childid = []
@@ -666,7 +581,7 @@ def main():
                         if len(tmp3) > 0:
                             verbs.extend(tmp3)
 
-                    #前の処理
+                    #old process (not used)
                     #print(target_id)
                     #nounphrase_id = tree3.xpath("//ccg/span[contains(@child, '" + target_id[0] + "')]/@child")
                     #nounphrase_ids = nounphrase_id[0].split(" ")
@@ -688,19 +603,19 @@ def main():
                     #nouns.extend(tree3.xpath("//ccg/span[@base='" + determiner + "']/following-sibling::span[@category='N']/@surf"))
                     #print(nouns)
                     if floating_flg == 1:
-                        #対象外
+                        # remove floating
                         continue
-                    #targetのdeterminerが主語に含まれる場合：一番最後の名詞/動詞について上位語・下位語に置換
+                    # replace an subjective word by its hypernym and hyponym
                     elif len(nouns) > 0 and len(verbs) > 0:
                         noun = " ".join(nouns)
                         newnoun = nouns[-1]
                         newnounpos = tree3.xpath("//ccg/span[@surf='" + newnoun + "']/@pos")[0]
                         if re.search("^PRP", newnounpos):
-                            #代名詞を含む場合は除く
+                            # remove pronouns
                             print(target+": is pronoun\n")
                             continue
                         if re.search("^NNP", newnounpos):
-                            #固有名詞のsemtagで置き換え？
+                            # replace its specific hypernym if a proper noun exists
                             print(target+" contains koyumeishi\n")
                             semtag = tree2.xpath("//taggedtokens/tagtoken/tags/tag[@type='tok' and text()='" + newnoun + "']/following-sibling::tag[@type='sem']/text()")
                             if len(semtag) > 0:
@@ -712,7 +627,6 @@ def main():
                                     print(target+" contains other semtag"+semtag[0]+"\n")
                                     newnoun = "something"
                                 results = replace_sentence(determiner, nounmono, noun, newnoun, sentence, results, target)
-                                #それ以上の置き換えはしない
                                 continue
                         if len(nouns) > 2:
                             newnewnoun = determiner + " " + nouns[-1]
@@ -720,30 +634,27 @@ def main():
                         verb = " ".join(verbs)
                         newverb = verbs[-1]
                         #print(results)
-                        #senseid(WordNetのsynsetID)を用いて上位語・下位語に置換
+                        # replace hypernym and hyponym using senseid
                         nounsense = tree2.xpath("//taggedtokens/tagtoken/tags/tag[@type='tok' and text()='" + newnoun + "']/following-sibling::tag[@type='wordnet']/text()")
                         verbsense = tree2.xpath("//taggedtokens/tagtoken/tags/tag[@type='tok' and text()='" + newverb + "']/following-sibling::tag[@type='wordnet']/text()")
                         if nounsense[0] == 'O':
                             nounsense = [str(lesk(words, newnoun, 'n'))[8:-2]]
-                            #nounsense = [str(wn.synsets(singularize(newnoun), pos=wn.NOUN)[0])[8:-2]]
                         if verbsense[0] == 'O':
                             verbsense = [str(lesk(words, newverb, 'v'))[8:-2]]
-                            #verbsense = [str(wn.synsets(singularize(newverb), pos=wn.VERB)[0])[8:-2]]
                         results = replace_sentence_WN_nv(determiner, nounmono, verbmono, newnoun, nounsense[0], newverb, verbsense[0], sentence, results, target)
                 
                     elif len(nouns) > 0:
-                        #targetのdeterminerが目的語に含まれる場合：一番最後の名詞について上位語・下位語に置換
+                        # replace an objective word by its hypernym and hyponym
                         noun = " ".join(nouns)
                         newnoun = nouns[-1] 
                         if len(nouns) > 2:
                             newnewnoun = determiner + " " + nouns[-1]
                             results = replace_sentence(determiner, nounmono, noun, newnewnoun, sentence, results, target)
                             #print(results)
-                        #newnounのsenseid(WordNetのsynsetID)を用いて上位語・下位語に置換
+                        # replace hypernym and hyponym using senseid
                         nounsense = tree2.xpath("//taggedtokens/tagtoken/tags/tag[@type='tok' and text()='" + newnoun + "']/following-sibling::tag[@type='wordnet']/text()")
                         if nounsense[0] == 'O':
                             nounsense = [str(lesk(words, newnoun, 'n'))[8:-2]]
-                            #nounsense = [str(wn.synsets(singularize(newnoun), pos=wn.NOUN)[0])[8:-2]]
                         results = replace_sentence_WN(determiner, nounmono, newnoun, nounsense[0], sentence, results, target)
 
             except Exception as e:
@@ -753,15 +664,12 @@ def main():
         results.to_csv('../output_en/leskexppmb_'+determiner+'.tsv', sep='\t')
 
 def main2():
-    #クラウドソーシング用
-    #determinerを含む例を取得
     parser = etree.XMLParser(remove_blank_text=True)
     files = glob.glob("../data/pmb-2.1.0/data/*/*/*/en.drs.xml")
     #files = glob.glob("../data/pmb-2.1.0/data/gold/*/*/en.drs.xml")
-    #determiners = ["a"]
     determiners = ["every", "each", "all", "some", "no", "both", "neither", "most", "many", "any",\
     "several", "few", "exactly"] 
-    #a,the, this, thatは一旦置いておく
+    # todo: a,the, this, that
     floating_list = ["both", "all", "each"]
     for determiner in determiners:
         nounmono, verbmono = check_monotonicity(determiner)
@@ -794,7 +702,7 @@ def main2():
                     floating_flg = 0
                     #print(target_id)
 
-                    #名詞句親ノード, 動詞句親ノード特定
+                    # detect the parent node of NP and VP
                     while True:
                         parent_id = tree3.xpath("//ccg/span[contains(@child, '" + target_id[0] + "')]/@id")
                         parent_category = tree3.xpath("//ccg/span[contains(@child, '" + target_id[0] + "')]/@category")[0]
@@ -812,7 +720,7 @@ def main2():
                         else:
                             target_id = parent_id
                     #print(target_id, verb_id)
-                    #名詞親ノード以下のtoken全て取得
+                    # extract the whole NP subtree
                     list_target_id = target_id[0].split(" ")
                     while True:
                         childid = []
@@ -826,7 +734,7 @@ def main2():
                             child_ids.extend(childid)
                             list_target_id = childid
                     
-                    #動詞親ノード以下のtoken全て取得
+                    # extract the whole VP subtree
                     list_verb_id = verb_id[0].split(" ")
                     while True:
                         childid = []
@@ -840,18 +748,16 @@ def main2():
                             child_verb_ids.extend(childid)
                             list_verb_id = childid
                     
-                    #print(child_ids)
                     for nounphrase in sorted(child_ids, key=lambda x:int((re.search(r"sp([0-9]+)", x)).group(1))):
                         tmp2 = tree3.xpath("//ccg/span[@id='" + nounphrase + "']/@surf")
                         if len(tmp2) > 0:
                             nouns.extend(tmp2)
-                        #print(nounphrase, nouns)
                     
                     for verbphrase in sorted(child_verb_ids, key=lambda x:int((re.search(r"sp([0-9]+)", x)).group(1))):
                         tmp3 = tree3.xpath("//ccg/span[@id='" + verbphrase + "']/@surf")
                         if len(tmp3) > 0:
                             verbs.extend(tmp3)
-                    #前の処理
+                    # old process
                     #nounphrase_id = tree3.xpath("//ccg/span[contains(@child, '" + target_id[0] + "')]/@child")
                     #nounphrase_ids = nounphrase_id[0].split(" ")
                     #nounphrase_ids.remove(target_id[0])
@@ -871,13 +777,12 @@ def main2():
                     #nouns.extend(tree3.xpath("//ccg/span[@base='" + determiner + "']/following-sibling::span[@category='N']/@surf"))
                     #print(nouns)
                     
-                    #targetのdeterminerが主語に含まれる場合：一番最後の名詞/動詞について上位語・下位語に置換
+                    # replace an subjective word by its hypernym and hyponym
                     if floating_flg == 1:
                         continue
                     elif len(nouns) > 0 and len(verbs) > 0:
                         noun = " ".join(nouns[1:])
                         verb = " ".join(verbs)
-                        #print(noun, verb)
                         patnoun = re.compile(noun)
                         newnoun = "<u>"+noun+"</u>"
                         patnewnoun = re.compile(newnoun)
@@ -892,7 +797,7 @@ def main2():
                         ttsv2.write(filename+"\t"+determiner+"\t"+verbmono+"\t"+orisentence2+"\t"+newsentence2+"\n")
                                     
                     elif len(nouns) > 0:
-                        #targetのdeterminerが目的語に含まれる場合：一番最後の名詞について上位語・下位語に置換
+                        # replace an objective word by its hypernym and hyponym
                         noun = " ".join(nouns[1:])
                         patnoun = re.compile(noun)
                         newnoun = "<u>"+noun+"</u>"
@@ -910,7 +815,7 @@ def main2():
         ttsv2.close()
 
 def format_files():
-    #シャッフルしてサンプリング、テストデータ100件ずつと訓練データに分ける
+    # sampling and create train/test splits
     eval_datas = glob.glob("../output_en/leskexppmb_*.tsv")
     alldata = pd.DataFrame(index=[], columns=['filename', 'determiner', 'monotonicity', 'gold_label', 'replace_target', 'replace_source', 'replace_mode', 'ori_sentence', 'new_sentence'])
     traindata = pd.DataFrame(index=[], columns=['filename', 'determiner', 'monotonicity', 'gold_label', 'replace_target', 'replace_source', 'replace_mode', 'ori_sentence', 'new_sentence'])
@@ -951,7 +856,7 @@ def format_files():
     conj_test.to_csv("../output_en/conj_test.tsv", sep='\t')
     disj_test.to_csv("../output_en/disj_test.tsv", sep='\t')
     
-    #MultiNLI train形式にする
+    # MultiNLI train format
     hoge = glob.glob("../output_en/pmb_train.tsv")
     results = pd.DataFrame(index=[], columns=['index','promptID','pairID','genre','sentence1_binary_parse','sentence2_binary_parse','sentence1_parse','sentence2_parse','sentence1','sentence2','label1','gold_label'])
     i = 392702
@@ -962,11 +867,9 @@ def format_files():
         hoo.close()
         for hool in hoolist[1:]:
             newhoolist = hool.split("\t")
-            #print(newhoolist)
             label = newhoolist[4]
             sentence = newhoolist[-2]
             newsentence = newhoolist[-1].strip("\n")
-            #print(newhoolist)
             record = pd.Series([str(i), str(j), str(j), str("fiction"), str(""), str(""), str(""), str(""), str(sentence), str(newsentence), str(label), str(label)], index=results.columns)
             results = results.append(record, ignore_index = True)
             i+=1
@@ -974,7 +877,7 @@ def format_files():
     results.to_csv("../output_en/jiantmerge/update_train.tsv", sep="\t", index=False, header=False)
     new_train = os.system("/usr/bin/cat ../output_en/jiantmerge/*.tsv > ../output_en/new_train.tsv")
 
-    #diagnostic test形式にする
+    # GLUE diagnostic test format
     hoge = glob.glob("../output_en/*_test.tsv")
     results = pd.DataFrame(index=[], columns=['Lexical Semantics','Predicate-Argument Structure','Logic','Knowledge','Domain','Premise','Hypothesis','Label'])
     for ho in hoge:
@@ -984,17 +887,15 @@ def format_files():
         hoo.close()
         for hool in hoolist[1:]:
             newhoolist = hool.split("\t")
-            #print(newhoolist)
             label = newhoolist[4]
             sentence = newhoolist[-2]
             newsentence = newhoolist[-1].strip("\n")
-            #print(newhoolist)
             record = pd.Series([str(""), str(""), str(hogename), str(""), str(""), str(sentence), str(newsentence), str(label)], index=results.columns)
             results = results.append(record, ignore_index = True)
     results.to_csv("../output_en/diagmerge/test_mulf.tsv", sep="\t", index=False, header=False)
     new_diagnostic = os.system("/usr/bin/cat ../output_en/diagmerge/*.tsv > ../output_en/new_diagnostic-full.tsv")
     
-    #MultiNLI train形式(仮説文のみ）にする
+    # MultiNLI train format (hypothesis only)
     hoge = glob.glob("../output_en/pmb_train.tsv")
     results = pd.DataFrame(index=[], columns=['index','promptID','pairID','genre','sentence1_binary_parse','sentence2_binary_parse','sentence1_parse','sentence2_parse','sentence1','sentence2','label1','gold_label'])
     i = 392702
@@ -1005,11 +906,9 @@ def format_files():
         hoo.close()
         for hool in hoolist[1:]:
             newhoolist = hool.split("\t")
-            #print(newhoolist)
             label = newhoolist[4]
             sentence = ""
             newsentence = newhoolist[-1].strip("\n")
-            #print(newhoolist)
             record = pd.Series([str(i), str(j), str(j), str("fiction"), str(""), str(""), str(""), str(""), str(sentence), str(newsentence), str(label), str(label)], index=results.columns)
             results = results.append(record, ignore_index = True)
             i+=1
@@ -1017,7 +916,7 @@ def format_files():
     results.to_csv("../output_en/jiantmergeho/update_train_hypoonly.tsv", sep="\t", index=False, header=False)
     new_train = os.system("/usr/bin/cat ../output_en/jiantmergeho/*.tsv > ../output_en/newhypoonly_train.tsv")
 
-    #diagnostic test形式(仮説文のみ）にする
+    # GLUE diagnostic format (hypothesis only)
     hoge = glob.glob("../output_en/*_test.tsv")
     results = pd.DataFrame(index=[], columns=['Lexical Semantics','Predicate-Argument Structure','Logic','Knowledge','Domain','Premise','Hypothesis','Label'])
     for ho in hoge:
@@ -1027,18 +926,16 @@ def format_files():
         hoo.close()
         for hool in hoolist[1:]:
             newhoolist = hool.split("\t")
-            #print(newhoolist)
             label = newhoolist[4]
             sentence = ""
             newsentence = newhoolist[-1].strip("\n")
-            #print(newhoolist)
             record = pd.Series([str(""), str(""), str(hogename), str(""), str(""), str(sentence), str(newsentence), str(label)], index=results.columns)
             results = results.append(record, ignore_index = True)
     results.to_csv("../output_en/diagmergeho/test_mulf_hypoonly.tsv", sep="\t", index=False, header=False)
     new_diagnostic = os.system("/usr/bin/cat ../output_en/diagmergeho/*.tsv > ../output_en/newhypoonly_diagnostic-full.tsv")
 
 
-    #MultiNLI dev形式にする（BERT評価用）
+    # MultiNLI dev_matched format（for BERT）
     results = pd.DataFrame(index=[], columns=['index','promptID','pairID','genre','sentence1_binary_parse','sentence2_binary_parse','sentence1_parse','sentence2_parse','sentence1','sentence2','label1','label2','label3','label4','label5','gold_label'])
     i = 0
     j = 0
@@ -1047,12 +944,10 @@ def format_files():
     hoo.close()
     for hool in hoolist[1:]:
         newhoolist = hool.split("\t")
-        #print(newhoolist)
         label = newhoolist[-1].strip("\n")
         sentence = newhoolist[5]
         newsentence = newhoolist[6]
         genre = ":".join(newhoolist[0:4])
-        #print(newhoolist)
         record = pd.Series([str(i), str(j), str(j), str(genre), str(""), str(""), str(""), str(""), str(sentence), str(newsentence), str(label), str(label), str(label), str(label), str(label), str(label)], index=results.columns)
         results = results.append(record, ignore_index = True)
         i += 1
@@ -1061,7 +956,7 @@ def format_files():
 
 
 if __name__ == '__main__':
-#    main()
-#   main2()
+    main()
+    main2()
     format_files()
     

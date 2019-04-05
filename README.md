@@ -1,12 +1,12 @@
-# LELP
-LELP: Linguistics-oriented Corpus for Encouraging Neural Models to Learn Logical Phenomena
+# HELP
+HELP: A Dataset for Handling Entailments with Lexical and Logical Phenomena
 
 ## Environment
 ```bash
-git clone https://github.com/verypluming/LELP.git
-cd LELP
-pyenv virtualenv 3.4.6 lelp
-pyenv activate lelp
+git clone https://github.com/verypluming/HELP.git
+cd HELP
+pyenv virtualenv 3.4.6 help
+pyenv activate help
 pip install -r requirements.txt
 python -c "import nltk; nltk.download('wordnet')"
 ```
@@ -29,9 +29,18 @@ python scripts/create_dataset_PMB.py
 
 ```bash
 output_en/
-pmb_train.tsv - Train split of LELP
-conj_test.tsv, disj_test.tsv, downwad_test.tsv, upward_test.tsv - Test split of LELP
+pmb_train.tsv
 ```
 
 ## Reference
+* Hitomi Yanaka, Koji Mineshima, Daisuke Bekki, Kentaro Inui, Satoshi Sekine, Lasha Abzianidze, and Johan Bos. HELP: A Dataset for Identifying Shortcomings of Neural Models in Monotonicity Reasoning. Proceedings of the Eighth Joint Conference on Lexical and Computational Semantics (\*SEM2019), Mineapolis, USA, 2019. [arXiv](https://arxiv.org/pdf/XXX.pdf)
+
+```
+@InProceedings{yanaka-EtAl:2019:starsem,
+  author    = {Yanaka, Hitomi and Mineshima, Koji  and  Bekki, Daisuke and Inui, Kentaro and Sekine, Satoshi and Abzianidze, Lasha and Bos, Johan},
+  title     = {HELP: A Dataset for Identifying Shortcomings of Neural Models in Monotonicity Reasoning},
+  booktitle = {Proceedings of the Eighth Joint Conference on Lexical and Computational Semantics (*SEM2019)},
+  year      = {2019},
+}
+```
 

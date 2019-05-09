@@ -1,7 +1,7 @@
 # HELP: A Dataset for Handling Entailments with Lexical and Logical Phenomena (Ver.1.0)
 
 ## Overview
-The HELP dataset is a natural language inference (NLI) dataset that embodies the combination of lexical and logical inferences focusing on monotonicity (i.e., phrase replacement-based reasoning).
+The HELP dataset is an automatically created natural language inference (NLI) dataset that embodies the combination of lexical and logical inferences focusing on monotonicity (i.e., phrase replacement-based reasoning).
 The HELP has 36K inference pairs consisting of upward monotone, downward monotone, non-monotone, conjunction, and disjunction.
 
 ## HELP dataset

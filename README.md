@@ -2,7 +2,7 @@
 
 ## Overview
 The HELP dataset is an automatically created natural language inference (NLI) dataset that embodies the combination of lexical and logical inferences focusing on monotonicity (i.e., phrase replacement-based reasoning).
-The HELP has 36K inference pairs consisting of upward monotone, downward monotone, non-monotone, conjunction, and disjunction.
+The HELP (Ver.1.0) has 36K inference pairs consisting of upward monotone, downward monotone, non-monotone, conjunction, and disjunction.
 
 ## HELP dataset
 ```bash
@@ -56,6 +56,6 @@ For questions and usage issues, please contact hitomi.yanaka@riken.jp .
 Apache License
 
 ## Acknowledgement
-This work was collaborative research with RIKEN, Ochanomizu University, and University of Groningen.
+This work is conducted in collaboration with RIKEN, Ochanomizu University, and University of Groningen.
 We thank the [Parallel Meaning Bank (PMB)](http://pmb.let.rug.nl/).
 

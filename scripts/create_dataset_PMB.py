@@ -1,7 +1,7 @@
 
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-#  Copyright 2018 Hitomi Yanaka
+#  Copyright 2019 Hitomi Yanaka
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -33,11 +33,7 @@ import inflect
 import logging as log
 from nltk.wsd import lesk
 inflect = inflect.engine()
-f = open("../data/parser_location.txt","r")
-locations = f.readlines()
-f.close()
-candc_dir = locations[0].split(":")[1].strip()
-easyccg_dir = locations[1].split(":")[1].strip()
+
 
 def keep_plurals(noun, newnoun):
     if inflect.singular_noun(noun) is False:
@@ -387,19 +383,16 @@ def candc2transccg(candc_trees):
 
 def parse(parser_name, sentence):
     parse_result = ""
+    f = open("../data/parser_location.txt","r")
+    locations = f.readlines()
+    f.close()
+    candc_dir = locations[0].split(":")[1].strip()
     if parser_name == "candc":
         # Parse using C&C.
         command = "echo "+sentence+"|"+candc_dir+"bin/candc --models "+candc_dir+"models --candc-printer xml"
         result = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = result.communicate()
         parse_result = candc2transccg(out)
-    # todo    
-    elif parser_name == "easyccg":
-        # Parse using EasyCCG
-        command = "echo "+sentence+"|"+candc_dir+"bin/pos --model "+candc_dir+"models/pos|"+candc_dir+"bin/ner -model "+candc_dir+"models/ner -ofmt \"%w|%p|%n \n\" |java -jar "+easyccg_dir+"easyccg.jar --model "+easyccg_dir+"model -i POSandNERtagged -o extended --maxLength 100 --nbest 1"
-        result = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = result.communicate()
-        parse_result = out
     return parse_result
 
 def check_monotonicity(determiner):
@@ -446,6 +439,15 @@ def rev_label(gold_label, monotonicity):
     elif gold_label == "neutral":
         return "entailment"
 
+def rev_mono(monotonicity):
+    #reverse the polarity
+    if monotonicity == "non_monotone":
+        return "non_monotone"
+    elif monotonicity == "downward_monotone":
+        return "upward_monotone"
+    elif monotonicity == "upward_monotone":
+        return "downward_monotone"
+
 def main():
     parser = etree.XMLParser(remove_blank_text=True)
     files = glob.glob("../data/pmb-2.1.0/data/*/*/*/en.drs.xml")
@@ -480,8 +482,10 @@ def main():
                 impid = tree2.xpath("//taggedtokens/tagtoken/tags/tag[@type='sem'][contains(text(), 'IMP')]/../../@xml:id")
                 negid = tree2.xpath("//taggedtokens/tagtoken/tags/tag[@type='sem'][contains(text(), 'NOT')]/../../@xml:id")
                 if len(negid) > 0 or len(impid) > 0:
-                    # TODO: recerse monotonicity if negation or implication exists
-                    print(target+": contains negation or implication. reverse monotonicity?\n")
+                    # reverse monotonicity if negation or implication exists
+                    print(target+": contains negation or implication. reverse monotonicity\n")
+                    nounmono = rev_mono(nounmono)
+                    verbmono = rev_mono(verbmono)
                 queid = tree2.xpath("//taggedtokens/tagtoken/tags/tag[@type='sem'][contains(text(), 'QUE')]/../../@xml:id")
                 firstpos = tree2.xpath("//taggedtokens/tagtoken[@xml:id='i1001']/tags/tag[@type='pos']/text()")
                 #tree2 = etree.parse("../data/pmb-2.1.0/data/gold/"+target+"/en.drs.xml", parser)
@@ -581,27 +585,6 @@ def main():
                         if len(tmp3) > 0:
                             verbs.extend(tmp3)
 
-                    #old process (not used)
-                    #print(target_id)
-                    #nounphrase_id = tree3.xpath("//ccg/span[contains(@child, '" + target_id[0] + "')]/@child")
-                    #nounphrase_ids = nounphrase_id[0].split(" ")
-                    #nounphrase_ids.remove(target_id[0])
-                    #print(nounphrase_ids)
-                    #for nounphrase in nounphrase_ids:
-                    #    nouns.extend(tree3.xpath("//ccg/span[@id='" + nounphrase + "']/@surf"))
-                    #    if len(nouns) == 0:
-                    #        child_id = tree3.xpath("//ccg/span[@id='" + nounphrase + "']/@child")
-                    #        child_ids = child_id[0].split(" ")
-                    #        for child in child_ids:
-                    #            nouns.extend(tree3.xpath("//ccg/span[@id='" + child + "']/@surf"))                
-                    #verbs.extend(tree3.xpath("//ccg/span[@base='" + determiner + "']/following::span[contains(@category, 'S[b=true]\\NP')]/@surf"))
-                    #verbs.extend(tree3.xpath("//ccg/span[@base='" + determiner + "']/following::span[contains(@category, 'S[to=true]\\NP')]/@surf"))
-                    #verbs.extend(tree3.xpath("//ccg/span[@base='" + determiner + "']/following::span[contains(@category, 'S[pss=true]\\NP')]/@surf"))
-                    #verbs.extend(tree3.xpath("//ccg/span[@base='" + determiner + "']/following::span[contains(@category, 'S[ng=true]\\NP')]/@surf"))
-                    #print(verbs)
-                    #nouns.extend(tree3.xpath("//ccg/span[@base='" + determiner + "']/following-sibling::span[@category='N/N']/@surf"))
-                    #nouns.extend(tree3.xpath("//ccg/span[@base='" + determiner + "']/following-sibling::span[@category='N']/@surf"))
-                    #print(nouns)
                     if floating_flg == 1:
                         # remove floating
                         continue
@@ -663,300 +646,34 @@ def main():
                 continue
         results.to_csv('../output_en/leskexppmb_'+determiner+'.tsv', sep='\t')
 
-def main2():
-    parser = etree.XMLParser(remove_blank_text=True)
-    files = glob.glob("../data/pmb-2.1.0/data/*/*/*/en.drs.xml")
-    #files = glob.glob("../data/pmb-2.1.0/data/gold/*/*/en.drs.xml")
-    determiners = ["every", "each", "all", "some", "no", "both", "neither", "most", "many", "any",\
-    "several", "few", "exactly"] 
-    # todo: a,the, this, that
-    floating_list = ["both", "all", "each"]
-    for determiner in determiners:
-        nounmono, verbmono = check_monotonicity(determiner)
-        ttsv = open("../output_en/"+determiner+"_PMB.tsv","w")
-        ttsv2 = open("../output_en/"+determiner+"_verb_PMB.tsv","w")
-        ttsv.write("filename"+"\t"+"determiner\t"+"monotonicity\t"+"new_sentence\t"+"ori_sentence\n")
-        ttsv2.write("filename"+"\t"+"determiner\t"+"monotonicity\t"+"new_sentence\t"+"ori_sentence\n")
-        for file in files:
-            filename = re.search("\/data\/pmb-2.1.0\/data\/(.*?)\/en.drs.xml", file).group(1)
-            #print(filename)
-            try:
-                tree = etree.parse("../data/pmb-2.1.0/data/"+filename+"/en.drs.xml", parser)
-                words = tree.xpath("//taggedtokens/tagtoken/tags/tag[@type='lemma']/text()")
-                #print(words)
-                if determiner in words:
-                    noun, newnoun, verb, newverb, nounsense, verbsense = "", "", "", "", "", ""
-                    verbs = []
-                    nouns = []
-                    words = []
-                    newwords = tree.xpath("//taggedtokens/tagtoken/tags/tag[@type='tok']/text()")
-                    sentence = " ".join(newwords)
-                    sentence = re.sub("ø ", "", sentence)
-                    #print(sentence)
-                    parse_result = parse("candc", sentence)
-                    tree3 = etree.fromstring(parse_result, parser)
-                    target_id = tree3.xpath("//ccg/span[@base='" + determiner + "']/@id")
 
-                    verb_id = []
-                    child_ids, child_verb_ids = [], []
-                    floating_flg = 0
-                    #print(target_id)
-
-                    # detect the parent node of NP and VP
-                    while True:
-                        parent_id = tree3.xpath("//ccg/span[contains(@child, '" + target_id[0] + "')]/@id")
-                        parent_category = tree3.xpath("//ccg/span[contains(@child, '" + target_id[0] + "')]/@category")[0]
-                        #print(parent_category)
-                        if not re.search("^NP\[?", parent_category):
-                            tmp4 = tree3.xpath("//ccg/span[contains(@child, '" + target_id[0] + "')]/@child")
-                            if len(tmp4) > 0:
-                                verb_id = tmp4[0].split(" ")
-                                verb_id.remove(target_id[0])
-                                verb_base =  tree3.xpath("//ccg/span[contains(@id, '" + verb_id[0] + "')]/@base")
-                                if 'be' in verb_base and determiner in floating_list:
-                                    #floating
-                                    floating_flg = 1
-                            break
-                        else:
-                            target_id = parent_id
-                    #print(target_id, verb_id)
-                    # extract the whole NP subtree
-                    list_target_id = target_id[0].split(" ")
-                    while True:
-                        childid = []
-                        for parentid in list_target_id:
-                            tmp = tree3.xpath("//ccg/span[contains(@id, '" + parentid + "')]/@child")
-                            if len(tmp) > 0:
-                                childid.extend(tmp[0].split(" "))
-                        if len(childid) == 0:
-                            break
-                        else:
-                            child_ids.extend(childid)
-                            list_target_id = childid
-                    
-                    # extract the whole VP subtree
-                    list_verb_id = verb_id[0].split(" ")
-                    while True:
-                        childid = []
-                        for parentid in list_verb_id:
-                            tmp5 = tree3.xpath("//ccg/span[contains(@id, '" + parentid + "')]/@child")
-                            if len(tmp5) > 0:
-                                childid.extend(tmp5[0].split(" "))
-                        if len(childid) == 0:
-                            break
-                        else:
-                            child_verb_ids.extend(childid)
-                            list_verb_id = childid
-                    
-                    for nounphrase in sorted(child_ids, key=lambda x:int((re.search(r"sp([0-9]+)", x)).group(1))):
-                        tmp2 = tree3.xpath("//ccg/span[@id='" + nounphrase + "']/@surf")
-                        if len(tmp2) > 0:
-                            nouns.extend(tmp2)
-                    
-                    for verbphrase in sorted(child_verb_ids, key=lambda x:int((re.search(r"sp([0-9]+)", x)).group(1))):
-                        tmp3 = tree3.xpath("//ccg/span[@id='" + verbphrase + "']/@surf")
-                        if len(tmp3) > 0:
-                            verbs.extend(tmp3)
-                    # old process
-                    #nounphrase_id = tree3.xpath("//ccg/span[contains(@child, '" + target_id[0] + "')]/@child")
-                    #nounphrase_ids = nounphrase_id[0].split(" ")
-                    #nounphrase_ids.remove(target_id[0])
-                    #for nounphrase in nounphrase_ids:
-                    #    nouns.extend(tree3.xpath("//ccg/span[@id='" + nounphrase + "']/@surf"))
-                    #    if len(nouns) == 0:
-                    #        child_id = tree3.xpath("//ccg/span[@id='" + nounphrase + "']/@child")
-                    #        child_ids = child_id[0].split(" ")
-                    #        for child in child_ids:
-                    #            nouns.extend(tree3.xpath("//ccg/span[@id='" + child + "']/@surf"))
-                    #verbs.extend(tree3.xpath("//ccg/span[@base='" + determiner + "']/following::span[contains(@category, 'S[b=true]\\NP')]/@surf"))
-                    #verbs.extend(tree3.xpath("//ccg/span[@base='" + determiner + "']/following::span[contains(@category, 'S[to=true]\\NP')]/@surf"))
-                    #verbs.extend(tree3.xpath("//ccg/span[@base='" + determiner + "']/following::span[contains(@category, 'S[pss=true]\\NP')]/@surf"))
-                    #verbs.extend(tree3.xpath("//ccg/span[@base='" + determiner + "']/following::span[contains(@category, 'S[ng=true]\\NP')]/@surf"))
-                    #print(verbs)
-                    #nouns.extend(tree3.xpath("//ccg/span[@base='" + determiner + "']/following-sibling::span[@category='N/N']/@surf"))
-                    #nouns.extend(tree3.xpath("//ccg/span[@base='" + determiner + "']/following-sibling::span[@category='N']/@surf"))
-                    #print(nouns)
-                    
-                    # replace an subjective word by its hypernym and hyponym
-                    if floating_flg == 1:
-                        continue
-                    elif len(nouns) > 0 and len(verbs) > 0:
-                        noun = " ".join(nouns[1:])
-                        verb = " ".join(verbs)
-                        patnoun = re.compile(noun)
-                        newnoun = "<u>"+noun+"</u>"
-                        patnewnoun = re.compile(newnoun)
-                        orisentence1 = re.sub(noun, newnoun, sentence)
-                        newsentence1 = re.sub(noun, "_____", sentence)
-                        ttsv.write(filename+"\t"+determiner+"\t"+nounmono+"\t"+orisentence1+"\t"+newsentence1+"\n")
-                        patverb = re.compile(verb)
-                        newverb = "<u>"+verb+"</u>"
-                        patnewverb = re.compile(newverb)
-                        orisentence2 = re.sub(verb, newverb, sentence)
-                        newsentence2 = re.sub(verb, "_____", sentence)
-                        ttsv2.write(filename+"\t"+determiner+"\t"+verbmono+"\t"+orisentence2+"\t"+newsentence2+"\n")
-                                    
-                    elif len(nouns) > 0:
-                        # replace an objective word by its hypernym and hyponym
-                        noun = " ".join(nouns[1:])
-                        patnoun = re.compile(noun)
-                        newnoun = "<u>"+noun+"</u>"
-                        patnewnoun = re.compile(newnoun)
-                        orisentence3 = re.sub(noun, newnoun, sentence)
-                        newsentence3 = re.sub(noun, "_____", sentence)
-                        ttsv.write(filename+"\t"+determiner+"\t"+nounmono+"\t"+orisentence3+"\t"+newsentence3+"\n")
-
-
-            except Exception as e:
-                log.exception("ERROR target: "+filename)
-                log.exception(e)
-                continue
-        ttsv.close()
-        ttsv2.close()
 
 def format_files():
-    # sampling and create train/test splits
-    eval_datas = glob.glob("../output_en/leskexppmb_*.tsv")
+    datas = glob.glob("../output_en/leskexppmb_*.tsv")
     alldata = pd.DataFrame(index=[], columns=['filename', 'determiner', 'monotonicity', 'gold_label', 'replace_target', 'replace_source', 'replace_mode', 'ori_sentence', 'new_sentence'])
-    traindata = pd.DataFrame(index=[], columns=['filename', 'determiner', 'monotonicity', 'gold_label', 'replace_target', 'replace_source', 'replace_mode', 'ori_sentence', 'new_sentence'])
 
-
-    for eval_data in eval_datas:
-        dataframe = pd.read_csv(eval_data, sep="\t", index_col=0)
+    for d in datas:
+        dataframe = pd.read_csv(d, sep="\t", index_col=0)
         if len(dataframe) > 0:
             alldata = alldata.append(dataframe)
 
-    downward_frame = alldata.query('monotonicity == "downward_monotone"')
-    downward_test = downward_frame.sample(n=100)
-    downward_train = downward_frame.drop(downward_test.index)
-    upward_frame = alldata.query('monotonicity == "upward_monotone"')
-    upward_test =upward_frame.sample(n=100)
-    upward_train = upward_frame.drop(upward_test.index)
-    non_frame = alldata.query('monotonicity == "non_monotone"')
-    non_test = non_frame.sample(n=100)
-    non_train = non_frame.drop(non_test.index)
-    conj_frame = alldata.query('monotonicity == "conjunction"')
-    conj_test = conj_frame.sample(n=100)
-    conj_train = conj_frame.drop(conj_test.index)
-    disj_frame = alldata.query('monotonicity == "disjunction"')
-    disj_test = disj_frame.sample(n=100)
-    disj_train = disj_frame.drop(disj_test.index)
     
-    traindata = traindata.append(downward_train)
-    traindata = traindata.append(upward_train)
-    traindata = traindata.append(non_train)
-    traindata = traindata.append(conj_train)
-    traindata = traindata.append(disj_train)
-    
-    traindata.to_csv("../output_en/pmb_train.tsv", sep='\t')
-    downward_test.to_csv("../output_en/downward_test.tsv", sep='\t')
-    
-    upward_test.to_csv("../output_en/upward_test.tsv", sep='\t')
-    non_test.to_csv("../output_en/non_test.tsv", sep='\t')
-    conj_test.to_csv("../output_en/conj_test.tsv", sep='\t')
-    disj_test.to_csv("../output_en/disj_test.tsv", sep='\t')
+    alldata.to_csv("../output_en/pmb_train.tsv", sep='\t', index=False)
     
     # MultiNLI train format
-    hoge = glob.glob("../output_en/pmb_train.tsv")
     results = pd.DataFrame(index=[], columns=['index','promptID','pairID','genre','sentence1_binary_parse','sentence2_binary_parse','sentence1_parse','sentence2_parse','sentence1','sentence2','label1','gold_label'])
-    i = 392702
-    j = 60999
-    for ho in hoge:
-        hoo = open(ho, "r")
-        hoolist = hoo.readlines()
-        hoo.close()
-        for hool in hoolist[1:]:
-            newhoolist = hool.split("\t")
-            label = newhoolist[4]
-            sentence = newhoolist[-2]
-            newsentence = newhoolist[-1].strip("\n")
-            record = pd.Series([str(i), str(j), str(j), str("fiction"), str(""), str(""), str(""), str(""), str(sentence), str(newsentence), str(label), str(label)], index=results.columns)
-            results = results.append(record, ignore_index = True)
-            i+=1
-            j+=1
-    results.to_csv("../output_en/jiantmerge/update_train.tsv", sep="\t", index=False, header=False)
-    new_train = os.system("/usr/bin/cat ../output_en/jiantmerge/*.tsv > ../output_en/new_train.tsv")
+    results['label1'] = alldata['gold_label']
+    results['gold_label'] = alldata['gold_label']
+    results['sentence1'] = alldata['ori_sentence']
+    results['sentence2'] = alldata['new_sentence']
+    results['index'] = results.reset_index()
+    results['promptID'] = results.reset_index()
+    results['pairID'] = results.reset_index()
+    results.to_csv("../output_en/pmb_train_mnliformat.tsv", sep="\t", index=False, header=False)
 
-    # GLUE diagnostic test format
-    hoge = glob.glob("../output_en/*_test.tsv")
-    results = pd.DataFrame(index=[], columns=['Lexical Semantics','Predicate-Argument Structure','Logic','Knowledge','Domain','Premise','Hypothesis','Label'])
-    for ho in hoge:
-        hogename = re.search("output_en/(.*)_test.tsv", ho).group(1)
-        hoo = open(ho, "r")
-        hoolist = hoo.readlines()
-        hoo.close()
-        for hool in hoolist[1:]:
-            newhoolist = hool.split("\t")
-            label = newhoolist[4]
-            sentence = newhoolist[-2]
-            newsentence = newhoolist[-1].strip("\n")
-            record = pd.Series([str(""), str(""), str(hogename), str(""), str(""), str(sentence), str(newsentence), str(label)], index=results.columns)
-            results = results.append(record, ignore_index = True)
-    results.to_csv("../output_en/diagmerge/test_mulf.tsv", sep="\t", index=False, header=False)
-    new_diagnostic = os.system("/usr/bin/cat ../output_en/diagmerge/*.tsv > ../output_en/new_diagnostic-full.tsv")
-    
-    # MultiNLI train format (hypothesis only)
-    hoge = glob.glob("../output_en/pmb_train.tsv")
-    results = pd.DataFrame(index=[], columns=['index','promptID','pairID','genre','sentence1_binary_parse','sentence2_binary_parse','sentence1_parse','sentence2_parse','sentence1','sentence2','label1','gold_label'])
-    i = 392702
-    j = 60999
-    for ho in hoge:
-        hoo = open(ho, "r")
-        hoolist = hoo.readlines()
-        hoo.close()
-        for hool in hoolist[1:]:
-            newhoolist = hool.split("\t")
-            label = newhoolist[4]
-            sentence = ""
-            newsentence = newhoolist[-1].strip("\n")
-            record = pd.Series([str(i), str(j), str(j), str("fiction"), str(""), str(""), str(""), str(""), str(sentence), str(newsentence), str(label), str(label)], index=results.columns)
-            results = results.append(record, ignore_index = True)
-            i+=1
-            j+=1
-    results.to_csv("../output_en/jiantmergeho/update_train_hypoonly.tsv", sep="\t", index=False, header=False)
-    new_train = os.system("/usr/bin/cat ../output_en/jiantmergeho/*.tsv > ../output_en/newhypoonly_train.tsv")
-
-    # GLUE diagnostic format (hypothesis only)
-    hoge = glob.glob("../output_en/*_test.tsv")
-    results = pd.DataFrame(index=[], columns=['Lexical Semantics','Predicate-Argument Structure','Logic','Knowledge','Domain','Premise','Hypothesis','Label'])
-    for ho in hoge:
-        hogename = re.search("output_en/(.*)_test.tsv", ho).group(1)
-        hoo = open(ho, "r")
-        hoolist = hoo.readlines()
-        hoo.close()
-        for hool in hoolist[1:]:
-            newhoolist = hool.split("\t")
-            label = newhoolist[4]
-            sentence = ""
-            newsentence = newhoolist[-1].strip("\n")
-            record = pd.Series([str(""), str(""), str(hogename), str(""), str(""), str(sentence), str(newsentence), str(label)], index=results.columns)
-            results = results.append(record, ignore_index = True)
-    results.to_csv("../output_en/diagmergeho/test_mulf_hypoonly.tsv", sep="\t", index=False, header=False)
-    new_diagnostic = os.system("/usr/bin/cat ../output_en/diagmergeho/*.tsv > ../output_en/newhypoonly_diagnostic-full.tsv")
-
-
-    # MultiNLI dev_matched format（for BERT）
-    results = pd.DataFrame(index=[], columns=['index','promptID','pairID','genre','sentence1_binary_parse','sentence2_binary_parse','sentence1_parse','sentence2_parse','sentence1','sentence2','label1','label2','label3','label4','label5','gold_label'])
-    i = 0
-    j = 0
-    hoo = open("../output_en/new_diagnostic-full.tsv", "r")
-    hoolist = hoo.readlines()
-    hoo.close()
-    for hool in hoolist[1:]:
-        newhoolist = hool.split("\t")
-        label = newhoolist[-1].strip("\n")
-        sentence = newhoolist[5]
-        newsentence = newhoolist[6]
-        genre = ":".join(newhoolist[0:4])
-        record = pd.Series([str(i), str(j), str(j), str(genre), str(""), str(""), str(""), str(""), str(sentence), str(newsentence), str(label), str(label), str(label), str(label), str(label), str(label)], index=results.columns)
-        results = results.append(record, ignore_index = True)
-        i += 1
-        j += 1
-    results.to_csv("../output_en/new_dev_matched.tsv", sep="\t", index=False)
 
 
 if __name__ == '__main__':
     main()
-    main2()
     format_files()
     
